@@ -86,36 +86,39 @@ class DraggableHome extends StatefulWidget {
   /// scrollController: An object that can be used to control the position to which this scroll view is scrolled.
   final ScrollController? scrollController;
 
+  final bool resizeToAvoidBottomInset;
+
   /// This will create DraggableHome.
-  const DraggableHome({
-    Key? key,
-    this.leading,
-    required this.title,
-    this.centerTitle = true,
-    this.actions,
-    this.alwaysShowLeadingAndAction = false,
-    this.alwaysShowTitle = false,
-    this.headerExpandedHeight = 0.35,
-    required this.headerWidget,
-    this.headerBottomBar,
-    this.backgroundColor,
-    this.appBarColor,
-    this.curvedBodyRadius = 20,
-    required this.body,
-    this.drawer,
-    this.fullyStretchable = false,
-    this.stretchTriggerOffset = 200,
-    this.expandedBody,
-    this.stretchMaxHeight = 0.9,
-    this.bottomSheet,
-    this.bottomNavigationBarHeight = kBottomNavigationBarHeight,
-    this.bottomNavigationBar,
-    this.floatingActionButton,
-    this.floatingActionButtonLocation,
-    this.floatingActionButtonAnimator,
-    this.physics,
-    this.scrollController,
-  })  : assert(headerExpandedHeight > 0.0 &&
+  const DraggableHome(
+      {Key? key,
+      this.leading,
+      required this.title,
+      this.centerTitle = true,
+      this.actions,
+      this.alwaysShowLeadingAndAction = false,
+      this.alwaysShowTitle = false,
+      this.headerExpandedHeight = 0.35,
+      required this.headerWidget,
+      this.headerBottomBar,
+      this.backgroundColor,
+      this.appBarColor,
+      this.curvedBodyRadius = 20,
+      required this.body,
+      this.drawer,
+      this.fullyStretchable = false,
+      this.stretchTriggerOffset = 200,
+      this.expandedBody,
+      this.stretchMaxHeight = 0.9,
+      this.bottomSheet,
+      this.bottomNavigationBarHeight = kBottomNavigationBarHeight,
+      this.bottomNavigationBar,
+      this.floatingActionButton,
+      this.floatingActionButtonLocation,
+      this.floatingActionButtonAnimator,
+      this.physics,
+      this.scrollController,
+      this.resizeToAvoidBottomInset = true})
+      : assert(headerExpandedHeight > 0.0 &&
             headerExpandedHeight < stretchMaxHeight),
         assert(
           (stretchMaxHeight > headerExpandedHeight) && (stretchMaxHeight < .95),
@@ -150,36 +153,36 @@ class _DraggableHomeState extends State<DraggableHome> {
         MediaQuery.of(context).size.height * (widget.stretchMaxHeight);
 
     return Scaffold(
-      backgroundColor:
-          widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
-      drawer: widget.drawer,
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (notification) {
-          if (notification.metrics.axis == Axis.vertical) {
-            // isFullyCollapsed
-            if ((isFullyExpanded.value) &&
-                notification.metrics.extentBefore > 100) {
-              isFullyExpanded.add(false);
+        backgroundColor:
+            widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+        drawer: widget.drawer,
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification.metrics.axis == Axis.vertical) {
+              // isFullyCollapsed
+              if ((isFullyExpanded.value) &&
+                  notification.metrics.extentBefore > 100) {
+                isFullyExpanded.add(false);
+              }
+              //isFullyCollapsed
+              if (notification.metrics.extentBefore >
+                  expandedHeight - AppBar().preferredSize.height - 40) {
+                if (!(isFullyCollapsed.value)) isFullyCollapsed.add(true);
+              } else {
+                if ((isFullyCollapsed.value)) isFullyCollapsed.add(false);
+              }
             }
-            //isFullyCollapsed
-            if (notification.metrics.extentBefore >
-                expandedHeight - AppBar().preferredSize.height - 40) {
-              if (!(isFullyCollapsed.value)) isFullyCollapsed.add(true);
-            } else {
-              if ((isFullyCollapsed.value)) isFullyCollapsed.add(false);
-            }
-          }
-          return false;
-        },
-        child: sliver(context, appBarHeight, fullyExpandedHeight,
-            expandedHeight, topPadding),
-      ),
-      bottomSheet: widget.bottomSheet,
-      bottomNavigationBar: widget.bottomNavigationBar,
-      floatingActionButton: widget.floatingActionButton,
-      floatingActionButtonLocation: widget.floatingActionButtonLocation,
-      floatingActionButtonAnimator: widget.floatingActionButtonAnimator,
-    );
+            return false;
+          },
+          child: sliver(context, appBarHeight, fullyExpandedHeight,
+              expandedHeight, topPadding),
+        ),
+        bottomSheet: widget.bottomSheet,
+        bottomNavigationBar: widget.bottomNavigationBar,
+        floatingActionButton: widget.floatingActionButton,
+        floatingActionButtonLocation: widget.floatingActionButtonLocation,
+        floatingActionButtonAnimator: widget.floatingActionButtonAnimator,
+        resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset);
   }
 
   CustomScrollView sliver(
